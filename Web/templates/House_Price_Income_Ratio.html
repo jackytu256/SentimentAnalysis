@@ -1,0 +1,56 @@
+{% extends 'Base.html' %}
+{% block head %}
+
+    <script type="text/javascript">
+     google.load('visualization', '1', {packages: ['line', 'corechart']});
+     google.setOnLoadCallback(init);
+     function init(){
+         drawHousePriceIncomeRatioChart()
+
+     }
+    // house-price-income-ratio
+    function drawHousePriceIncomeRatioChart() {
+      var jsonData = $.ajax({
+                                url: "{{ url_for('getHousePriceIncomeRatio',type='housepriceincome') }}",
+                                dataType: "json",
+                                async: false
+                            }).responseText;
+
+      var materialOptions = {
+        chart: {
+          title: 'House-Price-Income-Ratio'
+        },
+        width: 900,
+        height: 500,
+        series: {
+          // Gives each series an axis name that matches the Y-axis below.
+          0: {axis: 'Ratio'},
+          1: {axis: 'IncomeWRentalPayment'},
+          2: {axis: 'IncomeWRentalPayment'}
+        },
+        axes: {
+          // Adds labels to each axis; they don't have to match the axis names.
+          y: {
+            Ratio: {label: 'Houses(Index) '},
+            IncomeWRentalPayment: {label: 'Income & RenterPayment'}
+          }
+        }
+      };
+        console.log(jsonData)
+        var data = new google.visualization.DataTable(jsonData);
+        var materialChart = new google.charts.Line(document.getElementById('chart_div'));
+        materialChart.draw(data, materialOptions);
+
+    }
+
+    </script>
+  </head>
+{% endblock %}
+
+{% block body %}
+  <div id="HousePriceIndex_div"></div>
+  <p>    </p>
+  <div id="chart_div"></div>
+  <p></p>
+  <div id="HousePricewithRenterPayment_div"></div>
+{% endblock %}

@@ -1,0 +1,43 @@
+{% extends 'Base.html' %}
+{% block head %}
+
+    <script type="text/javascript">
+     google.load('visualization', '1', {packages: ['line', 'corechart']});
+     google.setOnLoadCallback(init);
+     function init(){
+         drawHousePriceIndexChart()
+     }
+
+     // house price index
+     function drawHousePriceIndexChart() {
+      var jsonData = $.ajax({
+                                url: "{{ url_for('getBubbleHousingIndex',type='houseingIndex') }}",
+                                dataType: "json",
+                                async: false
+                            }).responseText;
+      var options = {
+        title: 'House Price Index',
+        hAxis: {
+          title: 'Time'
+        },
+        vAxis: {
+          title: 'Index'
+        }
+      };
+      //console.log(jsonData)
+      var data =  new google.visualization.DataTable(jsonData);
+      var chart = new google.visualization.LineChart(document.getElementById('HousePriceIndex_div'));
+      chart.draw(data, options);
+    }
+
+    </script>
+  </head>
+{% endblock %}
+
+{% block body %}
+  <div id="HousePriceIndex_div"></div>
+  <p>    </p>
+  <div id="chart_div"></div>
+  <p></p>
+  <div id="HousePricewithRenterPayment_div"></div>
+{% endblock %}

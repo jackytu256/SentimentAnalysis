@@ -1,0 +1,106 @@
+<!DOCTYPE HTML>
+<!--
+
+-->
+<html>
+	<head lang="en">
+		<title>Sentiment Analysis</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<!--[if lte IE 8]><script src="../static/js/ie/html5shiv.js"></script><![endif]-->
+		<link rel="stylesheet" href="../static/css/main.css" />
+		<!--[if lte IE 8]><link rel="stylesheet" href="../static/css/ie8.css" /><![endif]-->
+        <script src="../static/js/jquery.min.js"></script>
+        <script src="../static/js/jquery.dropotron.min.js"></script>
+        <script src="../static/js/skel.min.js"></script>
+        <script src="../static/js/util.js"></script>
+        <!--[if lte IE 8]><script src=../static/css/ie8.css"></script><![endif]-->
+        <script src="../static/js/main.js"></script>
+		<script src="../static/js/jqcloud.js"></script>
+        <link rel="stylesheet" href="../static/css/jqcloud.css" />
+		<script type="text/javascript">
+  			var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+		</script>
+		<script type="text/javascript" src="https://www.google.com/jsapi"></script>
+		  <script type="text/javascript"></script>
+		{% block head %} {% endblock %}
+	</head>
+	<body class="homepage">
+		<div id="page-wrapper">
+
+			<!-- Header -->
+				<div id="header-wrapper">
+					<header id="header" class="container">
+					{% macro nav_link(endpoint, display) %}
+						<a class="{% if request.endpoint == endpoint %}active {% endif %}item"
+						   href="{{ url_for(endpoint) }}">{{ display }}</a>
+					{% endmacro %}
+
+						<!-- Logo -->
+							<div id="logo">
+								<h1><a>{{ nav_link('base', 'Melbourne Property Market') }}</a></h1>
+								<span></span>
+							</div>
+
+						<!-- Nav -->
+							<nav id="nav">
+								<ul>
+
+									<li>
+										<a href="#">Sentiment Analysis</a>
+										<ul>
+											<li><a>{{ nav_link('Individuals_Sentiment', 'Individuals_Sentiment') }}</a></li>
+											<li><a>{{ nav_link('Comparison', 'Individuals_Comparison') }}</a></li>
+											<li><a>{{ nav_link('Agencies_Sentiment', 'Agencies_Sentiment') }}</a></li>
+											<li><a>{{ nav_link('Agency_Comparison', 'Agency_Comparison') }}</a></li>
+										</ul>
+									</li>
+									<li>
+										<a href="#">Bubble_Indicators</a>
+										<ul>
+											<li><a>{{ nav_link('House_Price_Index', 'House Price Index') }}</a></li>
+											<li><a>{{ nav_link('House_Price_Income_Ratio', 'House Price Income Ratio') }}</a></li>
+											<li><a>{{ nav_link('House_Price_With_Renter_Payment', 'House Price With Renter Payment') }}</a></li>
+											<li><a>{{ nav_link('MortgageGDP', 'Mortgage with GDP') }}</a></li>
+										</ul>
+									</li>
+								</ul>
+							</nav>
+
+					</header>
+				</div>
+
+			<!-- Banner -->
+				<div id="banner-wrapper">
+					<div id="banner" class="box container">
+
+						<div class="7u 12u(medium)">
+						</div>
+						 <div>
+							 {% block body %}
+							{% endblock %}
+						 </div>
+
+					</div>
+				</div>
+
+			<!-- Footer -->
+				<div id="footer-wrapper">
+					<footer id="footer" class="container">
+						<div class="row">
+						</div>
+						<div class="row">
+							<div class="12u">
+								<div id="copyright">
+									<ul class="menu">
+										<li>&copy; Untitled. All rights reserved</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+									</ul>
+								</div>
+							</div>
+						</div>
+					</footer>
+				</div>
+
+			</div>
+	</body>
+</html>

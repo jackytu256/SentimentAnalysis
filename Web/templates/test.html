@@ -1,0 +1,105 @@
+{% extends 'Base.html' %}
+{% block head %}
+
+    <script type="text/javascript">
+     google.load('visualization', '1', {packages: ['line', 'corechart']});
+    function drawcharts() {
+
+          var jsonData = $.ajax({
+                                url: "{{ url_for('getBubbleHousingIndex',type='houseingIndex') }}",
+                                dataType: "json",
+                                async: false
+                            }).responseText;
+
+           var options = {
+        title: 'House Price Index',
+        hAxis: {
+          title: 'Time'
+        },
+        vAxis: {
+          title: 'Index'
+        }
+      };
+            var HPIR_jsonData = $.ajax({
+                                url: "{{ url_for('getHousePriceIncomeRatio',type='housepriceincome') }}",
+                                dataType: "json",
+                                async: false
+                            }).responseText;
+            var materialOptions = {
+                                        chart: {
+                                          title: 'House-Price-Income-Ratio'
+                                        },
+                                        width: 900,
+                                        height: 500,
+                                        series: {
+                                          // Gives each series an axis name that matches the Y-axis below.
+                                          0: {axis: 'Ratio'},
+                                          1: {axis: 'IncomeWRentalPayment'},
+                                          2: {axis: 'IncomeWRentalPayment'}
+                                        },
+                                        axes: {
+                                          // Adds labels to each axis; they don't have to match the axis names.
+                                          y: {
+                                            Ratio: {label: 'Houses(Index) '},
+                                            IncomeWRentalPayment: {label: 'Income & RenterPayment'}
+                                          }
+                                        }
+                                    };
+
+            var HPRP_jsonData = $.ajax({
+                                url: "{{ url_for('getHousePricewithRenterPayment',type='housepricewithrenterpayment') }}",
+                                dataType: "json",
+                                async: false
+                            }).responseText;
+
+            var HPR_materialOptions = {
+                                        chart: {
+                                          title: 'Renter Payment vs House Price',
+                                          options:{
+                                            curveType: 'function',
+                                        },
+                                        },
+
+                                        width: 900,
+                                        height: 500,
+                                        series: {
+                                          // Gives each series an axis name that matches the Y-axis below.
+                                          0: {axis: 'Ratio'},
+                                          1: {axis: 'PriceWRentalPayment'},
+                                          2: {axis: 'PriceWRentalPayment'}
+                                        },
+                                        axes: {
+                                          // Adds labels to each axis; they don't have to match the axis names.
+                                          y: {
+                                            Ratio: {label: 'Ratio '},
+                                            PriceWRentalPayment: {label: 'House price & RenterPayment'}
+                                          }
+                                        }
+                                      };
+
+            var chartA = new google.visualization.AreaChart(document.getElementById('chart_div'));
+            chartA.draw( new google.visualization.DataTable(jsonData), options);
+
+            var chartB = new google.visualization.LineChart(document.getElementById('chart_divs'));
+            chartB.draw(new google.visualization.DataTable(HPIR_jsonData), materialOptions);
+
+             var chartc = new google.charts.Line(document.getElementById('chart_divss'));
+            chartc.draw(new google.visualization.DataTable(HPRP_jsonData), HPR_materialOptions);
+        }
+
+        google.setOnLoadCallback(drawcharts);
+        google.load("visualization", "1", {packages:["corechart"]});
+
+    </script>
+  </head>
+{% endblock %}
+
+{% block body %}
+  <div id="chart_div"></div>
+  <p></p>
+
+  <p></p>
+  <div id="chart_divs"></div>
+  <p></p>
+  <div id="chart_divss"></div>
+{% endblock %}

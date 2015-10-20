@@ -1,0 +1,141 @@
+{% extends 'Base.html' %}
+{% block head %}
+
+<script type="text/javascript">
+    // Load the Visualization API and the controls package.
+    google.load('visualization', '1', { packages : ['controls'] } );
+    google.setOnLoadCallback(createTable);
+
+function createTable() {
+  // Create the dataset (DataTable)
+    var jsonData = $.ajax({
+                                url: "{{ url_for('getIndividSentiemntResult',type='allresult') }}",
+                                dataType: "json",
+                                async: false
+                            }).responseText;
+    var jsonnegword = $.ajax({
+                                url: "{{ url_for('getMostComm',type='Neg') }}",
+                                dataType: "json",
+                                async: false
+                            }).responseText;
+    var jsonposword = $.ajax({
+                                url: "{{ url_for('getMostComm',type='Pos') }}",
+                                dataType: "json",
+                                async: false
+                            }).responseText;
+   var negword = JSON.parse(jsonnegword)
+   var posword = JSON.parse(jsonposword)
+   $("#Pos").jQCloud(posword["rows"],{
+              autoResize: true,
+              fontSize: {
+                            from: 0.1,
+                            to: 0.02
+                }
+            });
+    $("#Neg").jQCloud(negword["rows"],{
+              autoResize: true,
+              fontSize: {
+                            from: 0.1,
+                            to: 0.02
+                }
+            });
+
+    var dash_container = document.getElementById('dashboard_div'),
+        myDashboard = new google.visualization.Dashboard(dash_container);
+
+      // Create a date range slider
+    var myDateSlider = new google.visualization.ControlWrapper({
+        'controlType': 'DateRangeFilter',
+        'containerId': 'control_div',
+        'options': {
+          'filterColumnLabel': 'Year'
+        }
+      });
+
+    var stringFilter = new google.visualization.ControlWrapper({
+          'controlType': 'StringFilter',
+          'containerId': 'fliter',
+          'options': {
+           'title':'search text data',
+          'filterColumnLabel': 'text',
+          'matchType':'any'
+
+          }
+        });
+    var control = new google.visualization.ControlWrapper({
+            containerId: 'Category_div',
+            controlType: 'CategoryFilter',
+            options: {
+                filterColumnLabel: 'sentiment',
+                ui: {
+                    allowTyping: false,
+                }
+            }
+        });
+      // Table visualization
+      var myTable = new google.visualization.ChartWrapper({
+        'chartType' : 'Table',
+        'containerId' : 'table_div',
+        'options': {
+            'showRowNumber': true,
+            'page':'enable',
+            'pageSize':30,
+            'allowHtml': true,
+        }
+      });
+
+      // Bind myTable to the dashboard, and to the controls
+      // this will make sure our table is update when our date changes
+      myDashboard.bind(myDateSlider, myTable);
+      myDashboard.bind(stringFilter,myTable)
+      myDashboard.bind(control,myTable);
+      // Bind myLine to the dashboard, and to the controls
+      // this will make sure our line chart is update when our date changes
+      var data = new google.visualization.DataTable(jsonData);
+      myDashboard.draw(data);
+    }
+
+    </script>
+<style>
+.float-left {
+    position: relative;
+    float: left;
+}
+.frame{
+    width:100%;
+    height: 300px;
+}
+.div-inline {
+    position: relative;
+    float: left;
+    width: 50%;
+    height: 300px;
+    padding: 20px 0;
+}
+.div-inline p {
+    position: absolute;
+    left: 0px;
+    bottom: 0px;
+    width: 100%;
+    text-align: center;
+    color: black;
+}
+</style>
+
+{% endblock %}
+
+{% block body %}
+ <!--Div that will hold the dashboard-->
+    <div class="float-left frame">
+            <div id="Pos" class="div-inline"><p>Positive</p></div>
+            <div id="Neg" class="div-inline"><p>Negative</p></div>
+    </div>
+    <div id="dashboard_div">
+        <div id="control_div" style="margin-bottom:10px;"><!-- Controls renders here --></div>
+        <div  class="float-left" style="margin-bottom:30px;">
+              <div id="fliter"class="float-left"></div>
+              <div id="Category_div"class="float-left"></div>
+        </div>
+        <div id="table_div"><!-- Table renders here --></div>
+    </div>
+{% endblock %}

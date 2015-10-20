@@ -1,0 +1,62 @@
+{% extends 'Base.html' %}
+{% block head %}
+    <script type="text/javascript">
+            google.load("visualization", "1.1", {packages: ["scatter","corechart"]});
+            google.setOnLoadCallback(init);
+            function init(){
+                drawChart()
+                drawChart2()
+            }
+            function drawChart() {
+
+                var jsonData = $.ajax({
+                                url: "{{ url_for('getScatterData',type='All') }}",
+                                dataType: "json",
+                                async: false
+                            }).responseText;
+                var options = {
+                        chart:{
+                            title: 'Sentiment Analysis',
+                            subtitle:'Individuals'
+                        },
+                        height:500,
+                        hAxis: {title: 'Score', minValue: -1, maxValue: 1},
+                        vAxis: {title: 'Count'},
+                        legend: 'none'
+                    };
+            //alert(jsonData)
+            var data = new google.visualization.DataTable(jsonData);
+            var chart = new google.charts.Scatter(document.getElementById('chart_div'));
+            chart.draw(data, options);
+
+            }
+
+            function drawChart2() {
+                      var jsonData = $.ajax({
+                                url: "{{ url_for('getTrendData',type='allresult') }}",
+                                dataType: "json",
+                                async: false
+                            }).responseText;
+
+                      var options = {
+                        title:"Overall Trend of Sentiment of Individuals",
+                        height: 300,
+                        legend: { position: 'top', maxLines: 3 },
+                        bar: { groupWidth: '75%' },
+                        isStacked: 'percent',
+                      };
+                //alert(jsonData)
+                var data = new google.visualization.DataTable(jsonData);
+                var chart = new google.visualization.ColumnChart(document.getElementById('chart_div2'));
+                chart.draw(data, options);
+
+            }
+
+    </script>
+  </head>
+{% endblock %}
+
+{% block body %}
+  <div id="chart_div"></div>
+  <div id="chart_div2" align="left"></div>
+{% endblock %}
