@@ -4,7 +4,6 @@ from collections import Counter
 import json
 import time
 import datetime
-import numpy as np
 from operator import itemgetter
 app = Flask(__name__)
 from Tweet_Harvest.DBManager import DBManager as dbmanager
