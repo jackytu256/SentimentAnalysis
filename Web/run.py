@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 from flask import Flask,jsonify,render_template,request
-import Tweet_Harvest.DBManager as dbmanager
-import Tweet_Harvest.Settings as config
 from collections import Counter
 import json
 import time
@@ -9,9 +7,10 @@ import datetime
 import numpy as np
 from operator import itemgetter
 app = Flask(__name__)
+from Tweet_Harvest.DBManager import DBManager as dbmanager
+from Tweet_Harvest.Settings import DBMapping,excluded_Words
 
-
-db = dbmanager.DBManager()
+db = dbmanager()
 
 def convertTime(time):
      convertime = datetime.datetime.strptime(time,'%a %b %d %H:%M:%S +0000 %Y')
@@ -30,8 +29,8 @@ def converTimeISO8601(time):
 # a web service provides three typs of results of sentiment analysis (neg,pos and neu)
 @app.route('/analysis/ScatterData/<type>')
 def getScatterData(type):
-    db.dbName = config.DBMapping.get(str(type).lower(),lambda: "nothing")()["DB_Name"]
-    db_view = config.DBMapping.get(str(type).lower(),lambda: "nothing")()["view_Name"]
+    db.dbName = DBMapping.get(str(type).lower(),lambda: "nothing")()["DB_Name"]
+    db_view = DBMapping.get(str(type).lower(),lambda: "nothing")()["view_Name"]
     counter = Counter()
     resultsCount = Counter()
     data = None
@@ -57,8 +56,8 @@ def getScatterData(type):
 
 @app.route('/analysis/TrendData/<type>')
 def getTrendData(type):
-    db.dbName = config.DBMapping.get(str(type).lower(),lambda: "nothing")()["DB_Name"]
-    db_view = config.DBMapping.get(str(type).lower(),lambda: "nothing")()["view_Name"]
+    db.dbName = DBMapping.get(str(type).lower(),lambda: "nothing")()["DB_Name"]
+    db_view = DBMapping.get(str(type).lower(),lambda: "nothing")()["view_Name"]
     listdata =[]
     data = None
     test = 0
@@ -114,9 +113,9 @@ def getTrendData(type):
 
 @app.route('/analysis/SentimentData/<type>')
 def getIndividSentiemntResult(type):
-    db.dbName = config.DBMapping.get(str(type).lower(),lambda: "nothing")()["DB_Name"]
+    db.dbName = DBMapping.get(str(type).lower(),lambda: "nothing")()["DB_Name"]
     listdata =[]
-    db_view = config.DBMapping.get(str(type).lower(),lambda: "nothing")()["view_Name"]
+    db_view = DBMapping.get(str(type).lower(),lambda: "nothing")()["view_Name"]
     data = list(db.getAllViewData(str(db_view)))
     #print(len(data))
     rows = [{'c': [{'v': convertTimeToDate(rows.value["time"])}, {'v': rows.value["text"]},{'v': rows.value["sentiment"]["perception"]}]} for rows in data]
@@ -132,8 +131,8 @@ def getIndividSentiemntResult(type):
 # a web service provides a type (neg, neu and pos) dataset for getting most common words
 @app.route('/analysis/result/most_comm/<type>')
 def getMostComm(type):
-    db.dbName = config.DBMapping.get(str(type).lower(),lambda: "nothing")()["DB_Name"]
-    db_view = config.DBMapping.get(str(type).lower(),lambda: "nothing")()["view_Name"]
+    db.dbName =DBMapping.get(str(type).lower(),lambda: "nothing")()["DB_Name"]
+    db_view = DBMapping.get(str(type).lower(),lambda: "nothing")()["view_Name"]
     word_list = []
     print(db_view)
     hasrows = True
@@ -153,7 +152,7 @@ def getMostComm(type):
             startid = data.rows[-1].value["id"]
         for words in data.rows:
             for singleword in words.value["correction"].split():
-                if singleword not in config.excluded_Words:
+                if singleword not in excluded_Words:
                     most_comm.append((singleword))
 
     data ={
@@ -169,7 +168,7 @@ def getMostComm(type):
 # provides detailed information of tweet based on the searchword
 @app.route('/analysis/Sentiment/<type>')
 def sMostCommonByKeyWord(type):
-    db_view = config.DBMapping.get(str(type).lower(),lambda: "nothing")()
+    db_view = DBMapping.get(str(type).lower(),lambda: "nothing")()
     searchword = request.args["searchword"] if "searchword" in request.args else "None"
     data = []
     hasrows = True
@@ -193,8 +192,8 @@ def sMostCommonByKeyWord(type):
 
 @app.route('/analysis/Bubble/<type>')
 def getBubbleHousingIndex(type):
-    db.dbName = config.DBMapping.get(str(type).lower(),lambda: "nothing")()["DB_Name"]
-    db_view = config.DBMapping.get(str(type).lower(),lambda: "nothing")()["view_Name"]
+    db.dbName = DBMapping.get(str(type).lower(),lambda: "nothing")()["DB_Name"]
+    db_view = DBMapping.get(str(type).lower(),lambda: "nothing")()["view_Name"]
     data = list(db.getAllViewData(db_view))
     rows = [{'c': [{'v': converTimeISO8601(rows.value["date"])}, {'v': rows.value["index"]}]} for rows in data]
     data = {
@@ -206,8 +205,8 @@ def getBubbleHousingIndex(type):
 
 @app.route('/analysis/HousePriceIncomeRatio/<type>')
 def getHousePriceIncomeRatio(type):
-    db.dbName = config.DBMapping.get(str(type).lower(),lambda: "nothing")()["DB_Name"]
-    db_view = config.DBMapping.get(str(type).lower(),lambda: "nothing")()["view_Name"]
+    db.dbName = DBMapping.get(str(type).lower(),lambda: "nothing")()["DB_Name"]
+    db_view = DBMapping.get(str(type).lower(),lambda: "nothing")()["view_Name"]
     data = list(db.getAllViewData(db_view))
     rows = [{'c': [{'v': converTimeISO8601(rows.value["date"])}, {'v': rows.value["ratio"]},{'v': rows.value["attribute"]['Annual_income']},{'v': rows.value["attribute"]['houseprice']}]} for rows in data]
     data = {
@@ -219,8 +218,8 @@ def getHousePriceIncomeRatio(type):
 
 @app.route('/analysis/HousePricewithRenterPayment/<type>')
 def getHousePricewithRenterPayment(type):
-    db.dbName = config.DBMapping.get(str(type).lower(),lambda: "nothing")()["DB_Name"]
-    db_view = config.DBMapping.get(str(type).lower(),lambda: "nothing")()["view_Name"]
+    db.dbName = DBMapping.get(str(type).lower(),lambda: "nothing")()["DB_Name"]
+    db_view = DBMapping.get(str(type).lower(),lambda: "nothing")()["view_Name"]
     data = list(db.getAllViewData(db_view))
     rows = [{'c': [{'v': rows.value["date"]}, {'v': rows.value["ratio"]},{'v': rows.value["attribute"]['renter_payment']},{'v': rows.value["attribute"]['houseprice']}]} for rows in data]
     data = {
