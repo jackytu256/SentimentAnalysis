@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+import sys
+sys.path.append('/home/ubuntu/myproject/SentimentAnalysis/Tweet_Harvest')
 from flask import Flask,jsonify,render_template,request
 from collections import Counter
 import json
