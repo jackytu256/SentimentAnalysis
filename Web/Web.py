@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from flask import Flask,jsonify,render_template,request
 import Tweet_Harvest.DBManager as dbmanager
 import Tweet_Harvest.Settings as config
@@ -72,7 +73,7 @@ def getTrendData(type):
          listdata.append([convertTime(rows.value["time"]),"pos"])
          test+=1
       elif rows.value["sentiment"]["senti_Polarity"] ==0:
-         listdata.append([convertTime(rows.value["time"]),"neu"])
+         #listdata.append([convertTime(rows.value["time"]),"neu"])
          test+=1
       else:
          listdata.append([convertTime(rows.value["time"]),"neg"])
@@ -94,6 +95,7 @@ def getTrendData(type):
              tempTime = sentimentData[0][0]
         else:
             sentimentList.append({'c': [{'v': tempTime}, {'v': tempPosCount},{'v': tempNegCount}]})
+
             tempPosCount = 0
             tempNegCount = 0
             tempTime = sentimentData[0][0]
@@ -106,7 +108,7 @@ def getTrendData(type):
         'cols': list(map(lambda x: {'id': x[0], 'label': x[0], 'type': x[1]}, [('Year', 'string'), ('pos', 'number'),('neg', 'number')])),
         'rows': sentimentList
     }
-    print(sentimentList)
+    #print(sentimentList)
     return jsonify(data)
 
 
@@ -116,7 +118,7 @@ def getIndividSentiemntResult(type):
     listdata =[]
     db_view = config.DBMapping.get(str(type).lower(),lambda: "nothing")()["view_Name"]
     data = list(db.getAllViewData(str(db_view)))
-    print(len(data))
+    #print(len(data))
     rows = [{'c': [{'v': convertTimeToDate(rows.value["time"])}, {'v': rows.value["text"]},{'v': rows.value["sentiment"]["perception"]}]} for rows in data]
     #rows = [[convertTimeToDate(rows.value["time"]),rows.value["text"],rows.value["sentiment"]["perception"]] for rows in data]
     data = {
@@ -157,8 +159,8 @@ def getMostComm(type):
     data ={
         'rows':[{'text': key, 'weight': val} for (key, val) in Counter(most_comm).most_common(20)]
     }
-    print(db_view)
-    print(data)
+    #print(db_view)
+    #print(data)
     ##### present the data based on the most_common
     return jsonify(data)
 
@@ -175,7 +177,7 @@ def sMostCommonByKeyWord(type):
     page = 0
     startid = " "
     most_comm = []
-    print(db_view)
+    #print(db_view)
     while hasrows:
         skip = 0 if page == 0 else 1
         page+=1
@@ -199,7 +201,7 @@ def getBubbleHousingIndex(type):
         'cols': list(map(lambda x: {'id': x[0], 'label': x[0], 'type': x[1]}, [('Year', 'string'), ('index', 'number'),])),
         'rows': rows
     }
-    print(data)
+    #print(data)
     return jsonify(data)
 
 @app.route('/analysis/HousePriceIncomeRatio/<type>')
@@ -222,10 +224,10 @@ def getHousePricewithRenterPayment(type):
     data = list(db.getAllViewData(db_view))
     rows = [{'c': [{'v': rows.value["date"]}, {'v': rows.value["ratio"]},{'v': rows.value["attribute"]['renter_payment']},{'v': rows.value["attribute"]['houseprice']}]} for rows in data]
     data = {
-        'cols': list(map(lambda x: {'id': x[0], 'label': x[0], 'type': x[1]}, [('Year', 'string'),('House price vs renter payment', 'number'), ('Annual renter payment', 'number'), ('House price', 'number')])),
+        'cols': list(map(lambda x: {'id': x[0], 'label': x[0], 'type': x[1]}, [('Year', 'string'),('House Price Rent Ratio', 'number'), ('Annual renter payment', 'number'), ('House price', 'number')])),
         'rows': rows
     }
-    print(data)
+    #print(data)
     return jsonify(data)
 
 ####  render template below ##########
@@ -268,6 +270,10 @@ def House_Price_With_Renter_Payment():
 @app.route('/MortgageGDP')
 def MortgageGDP():
     return  render_template("MortgageGDP.html")
+
+@app.route('/System_Architecture')
+def System_Architecture():
+    return  render_template("System_Architecture.html")
 
 
 if __name__ == '__main__':
