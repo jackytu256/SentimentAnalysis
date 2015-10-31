@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 __author__ = 'tuhung-te'
 import couchdb
-from Settings import db_uri,db_name,auth_keys,search_Locations,db_original_Name,db_follow_name,db_original_follow_Name,db_list
+from Tweet_Harvest.Settings  import db_uri,db_name,auth_keys,search_Locations,db_original_Name,db_follow_name,db_original_follow_Name,db_list
 import functools
 
 class DBManager(object):

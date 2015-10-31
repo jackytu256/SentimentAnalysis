@@ -6,8 +6,8 @@ import time
 import datetime
 from operator import itemgetter
 app = Flask(__name__)
-from SentimentAnalysis.Tweet_Harvest.DBManager import  DBManager as dbmanager
-from SentimentAnalysisTweet_Harvest.Settings import DBMapping,excluded_Words
+from Tweet_Harvest.DBManager import  DBManager as dbmanager
+from Tweet_Harvest.Settings import DBMapping,excluded_Words
 
 
 db = dbmanager()
