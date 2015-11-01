@@ -27,6 +27,7 @@ nohup /home/ubuntu/myproject_test/SentimentAnalysis/Web/run.py &
 ```
 SentimentAnalysis
 ├── README.md
+├── DB_Views_Scripts.js         A snippet of the javascript relating to db views
 ├── Tweet_Harvest               Main sentiment analysis directory
 ├──---- Sentiment_Analysis      Preprocessing and sentiment analysis
 ├──---- Settings                Configuration file
